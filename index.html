@@ -1,10 +1,40 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue + TS</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="en">Tech Stack Generator</title>
+    <title data-lang="zh">技术栈生成器</title>
+    <title data-lang="ja">技術スタックジェネレーター</title>
+    <script>
+      // 从localStorage或URL参数获取语言设置
+      const getPreferredLanguage = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+        if (langParam && ['en', 'zh', 'ja'].includes(langParam)) {
+          localStorage.setItem('preferred-language', langParam);
+          return langParam;
+        }
+        return localStorage.getItem('preferred-language') || 'zh';
+      };
+
+      // 设置页面标题
+      const setPageTitle = (lang) => {
+        const titles = document.querySelectorAll('title[data-lang]');
+        titles.forEach(title => {
+          if (title.getAttribute('data-lang') === lang) {
+            document.title = title.textContent;
+          }
+        });
+      };
+
+      // 初始化语言
+      const lang = getPreferredLanguage();
+      setPageTitle(lang);
+      document.documentElement.setAttribute('lang', lang);
+    </script>
+    <link rel='stylesheet' href='https://chinese-fonts-cdn.deno.dev/packages/lxgwwenkai/dist/LXGWWenKai-Regular/result.css' /> 
   </head>
   <body>
     <div id="app"></div>

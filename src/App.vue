@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 interface TechStack {
   name: string
@@ -74,10 +74,38 @@ const spinTechs = async () => {
   spinning.value = false
   showResult.value = true
 }
+
+const currentLang = computed(() => locale.value)
+
+const switchLanguage = (lang: string) => {
+  locale.value = lang
+  // 更新 URL 和 localStorage
+  const url = new URL(window.location.href)
+  url.searchParams.set('lang', lang)
+  window.history.replaceState({}, '', url)
+  localStorage.setItem('preferred-language', lang)
+  // 更新页面标题
+  const setPageTitle = (window as any).setPageTitle
+  if (typeof setPageTitle === 'function') {
+    setPageTitle(lang)
+  }
+}
 </script>
 
 <template>
   <div class="container">
+    <!-- 语言切换器 -->
+    <div class="language-switcher">
+      <button 
+        v-for="lang in ['zh', 'en', 'ja']" 
+        :key="lang"
+        :class="['lang-btn', { active: currentLang === lang }]"
+        @click="switchLanguage(lang)"
+      >
+        {{ lang === 'zh' ? '🇨🇳' : lang === 'en' ? '🇺🇸' : '🇯🇵' }}
+      </button>
+    </div>
+
     <h1>{{ t('title') }}</h1>
     
     <!-- 类别选择区域 -->
@@ -167,42 +195,42 @@ const spinTechs = async () => {
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
 }
 
 .category-selector {
-  margin: 2rem 0;
+  margin: 1.5rem 0;
 }
 
 .description {
   color: #666;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .category-buttons {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .category-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   border: 2px solid #ddd;
   border-radius: 8px;
   background: white;
   color: #666;
   cursor: pointer;
   transition: all 0.3s;
-  min-width: 120px;
+  min-width: 110px;
 }
 
 .category-btn .category-icon {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   opacity: 0.7;
 }
 
@@ -219,13 +247,13 @@ const spinTechs = async () => {
 .tech-display {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin: 2rem 0;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
 }
 
 .tech-card {
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   border: 2px solid #ddd;
   border-radius: 12px;
   display: flex;
@@ -242,12 +270,12 @@ const spinTechs = async () => {
 }
 
 .icon-wrapper {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .icon-wrapper :deep(svg) {
@@ -257,25 +285,25 @@ const spinTechs = async () => {
 }
 
 .tech-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
 .placeholder {
   color: #666;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .spin-button {
-  padding: 0.8rem 2rem;
-  font-size: 1.2rem;
+  padding: 0.6rem 1.8rem;
+  font-size: 1.1rem;
   border: none;
   border-radius: 8px;
   background: #42b883;
   color: white;
   cursor: pointer;
   transition: all 0.3s;
-  min-width: 150px;
+  min-width: 140px;
 }
 
 .spin-button:disabled {
@@ -288,8 +316,8 @@ const spinTechs = async () => {
 }
 
 .result-card {
-  margin-top: 3rem;
-  padding: 2rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
   border-radius: 12px;
   background: linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%);
   text-align: center;
@@ -298,14 +326,14 @@ const spinTechs = async () => {
 
 .result-summary {
   color: #666;
-  font-size: 1.1rem;
-  margin: 1rem 0 2rem;
+  font-size: 1rem;
+  margin: 0.8rem 0 1.5rem;
 }
 
 .result-stack {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
   align-items: center;
 }
 
@@ -319,8 +347,8 @@ const spinTechs = async () => {
 .tech-badge {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem 1.5rem;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
   background: white;
   border-radius: 50px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
@@ -332,14 +360,14 @@ const spinTechs = async () => {
 }
 
 .result-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 }
 
 .tech-name {
   font-weight: bold;
   color: #42b883;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .tech-description {
@@ -347,9 +375,39 @@ const spinTechs = async () => {
 }
 
 .result-footer {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   color: #42b883;
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: 1rem;
+}
+
+.language-switcher {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+.lang-btn {
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  opacity: 0.7;
+}
+
+.lang-btn:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.lang-btn.active {
+  opacity: 1;
+  border-color: #42b883;
 }
 </style>
